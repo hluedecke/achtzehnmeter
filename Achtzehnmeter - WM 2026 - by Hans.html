@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Achtzehnmeter">
+<meta name="theme-color" content="#080b10">
+<title>Achtzehnmeter - WM 2026 - by Hans</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&family=Barlow+Condensed:wght@400;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#080b10;color:#e2e8f0;font-family:'Barlow',sans-serif;min-height:100vh;overflow-x:hidden}
+button{cursor:pointer;font-family:'Barlow',sans-serif}
+/* SPLASH */
+#splash{position:fixed;inset:0;z-index:999;background:#080b10;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;overflow-y:auto;text-align:center}
+#splash.gone{display:none}
+.sp-ball{font-size:50px;margin-bottom:8px}
+.sp-logo{font-family:'Bebas Neue',sans-serif;font-size:64px;letter-spacing:6px;background:linear-gradient(135deg,#fff,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:4px}
+.sp-by{font-family:'Barlow Condensed',sans-serif;font-size:14px;letter-spacing:4px;color:#4ade80;margin-bottom:4px}
+.sp-sub{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:4px;color:#64748b;margin-bottom:28px}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;max-width:680px;width:100%;margin-bottom:28px}
+.sp-card{background:#151e2d;border:1px solid #1e2d3d;border-radius:10px;padding:12px;text-align:left}
+.sp-card:nth-child(1){border-top:2px solid #4ade80}
+.sp-card:nth-child(2){border-top:2px solid #22d3ee}
+.sp-card:nth-child(3){border-top:2px solid #fbbf24}
+.sp-card:nth-child(4){border-top:2px solid #a78bfa}
+.sp-card:nth-child(5){border-top:2px solid #f97316}
+.sp-card:nth-child(6){border-top:2px solid #ec4899}
+.sp-ci{font-size:22px;margin-bottom:5px}
+.sp-ct{font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:#fff;margin-bottom:3px}
+.sp-cd{font-size:10px;color:#64748b;line-height:1.5}
+.sp-btn{background:linear-gradient(135deg,#4ade80,#22d3ee);color:#000;border:none;padding:14px 40px;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:4px;border-radius:40px;box-shadow:0 0 24px rgba(74,222,128,.3);width:100%;max-width:280px}
+.sp-note{margin-top:10px;font-size:10px;color:#374151;letter-spacing:2px}
+/* APP */
+#app{display:none;min-height:100vh}
+#app.on{display:block}
+/* HEADER */
+.hdr{background:rgba(8,11,16,.97);border-bottom:1px solid #1e2d3d;padding:14px 16px 0;position:sticky;top:0;z-index:100;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.hdr-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;max-width:960px;margin-left:auto;margin-right:auto}
+.hdr-t{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;background:linear-gradient(90deg,#fff,#4ade80,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr-by{font-size:10px;color:#4ade80;letter-spacing:2px;font-family:'Barlow Condensed',sans-serif}
+.hdr-s{font-size:10px;color:#64748b;letter-spacing:1px}
+.tabs{display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:960px;margin:0 auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 14px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border:none;background:transparent;color:#64748b;border-bottom:3px solid transparent;white-space:nowrap;flex-shrink:0}
+.tab.on{color:#4ade80;border-bottom-color:#4ade80}
+/* CONTENT */
+.cnt{max-width:960px;margin:0 auto;padding:20px 14px 80px}
+/* LOADER */
+.ldr{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;gap:14px}
+.ldr-b{font-size:36px;animation:spin 1s linear infinite}
+.ldr-t{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;color:#4ade80;font-size:12px}
+/* HELPERS */
+.slbl{font-size:10px;letter-spacing:4px;color:#64748b;font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.slbl:after{content:'';flex:1;height:1px;background:#1e2d3d}
+/* TEAM GRID */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-bottom:28px}
+.tcard{background:#0f1520;border:1px solid #1e2d3d;border-radius:12px;padding:16px;cursor:pointer;position:relative;overflow:hidden}
+.tcard:before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.tcard.ger:before{background:linear-gradient(90deg,#555,#888)}
+.tcard.ecu:before{background:linear-gradient(90deg,#FFD700,#DAA520)}
+.tcard.ivo:before{background:linear-gradient(90deg,#F97316,#DC2626)}
+.tcard.cur:before{background:linear-gradient(90deg,#3B82F6,#06B6D4)}
+.th{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.tf{font-size:30px}
+.tn{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px}
+.te{font-size:10px;color:#64748b;margin-top:1px}
+.tw{font-size:30px;font-family:'Bebas Neue',sans-serif;line-height:1;text-align:right}
+.twl{font-size:9px;color:#64748b;letter-spacing:2px;text-align:right}
+.br{margin-bottom:5px}
+.blr{display:flex;justify-content:space-between;margin-bottom:2px}
+.bll{font-size:9px;color:#64748b;letter-spacing:1px;text-transform:uppercase}
+.blv{font-size:10px;font-weight:700}
+.bt{height:4px;background:#374151;border-radius:2px;overflow:hidden}
+.bf{height:100%;border-radius:2px}
+/* MATCH TABLE */
+.mtbl{background:#0f1520;border:1px solid #1e2d3d;border-radius:10px;overflow:hidden;margin-bottom:28px}
+.mrow{display:grid;grid-template-columns:1fr 160px 1fr;align-items:center;padding:10px 14px;border-bottom:1px solid #1e2d3d;gap:8px}
+.mrow:last-child{border-bottom:none}
+.mrow:nth-child(even){background:rgba(255,255,255,.015)}
+.mta{text-align:right;font-weight:600;font-size:12px}
+.mtb{font-weight:600;font-size:12px}
+.mc{text-align:center}
+.mpr{display:flex;justify-content:space-between;font-size:10px;margin-bottom:3px;font-weight:700}
+.mbt{height:6px;background:#374151;border-radius:3px;display:flex;overflow:hidden}
+/* LIVE */
+.lvsec{background:#0f1520;border:1px solid #1e2d3d;border-radius:12px;padding:16px;margin-bottom:20px}
+.lvt{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:3px;color:#4ade80;margin-bottom:3px}
+.lvd{font-size:11px;color:#64748b;margin-bottom:14px;line-height:1.5}
+.lvph{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;color:#22d3ee;margin:14px 0 8px;padding-top:12px;border-top:1px solid #1e2d3d}
+.lvph:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.lvm{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid #1e2d3d}
+.lvm:last-child{border-bottom:none}
+.lvmt{font-size:11px;font-weight:600}
+.lvmt.r{text-align:right}
+.lvsc{display:flex;align-items:center;gap:3px}
+.lvi{width:34px;height:32px;background:#151e2d;border:1px solid #1e2d3d;border-radius:6px;color:#e2e8f0;font-size:16px;font-family:'Bebas Neue',sans-serif;text-align:center;-webkit-appearance:none;appearance:none;padding:0}
+.lvi:focus{outline:none;border-color:#4ade80}
+.lvsp{color:#64748b;font-size:13px;font-weight:700}
+.lvok{font-size:9px;color:#4ade80;text-align:center;margin-top:2px;letter-spacing:1px}
+.kogrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;margin-bottom:14px}
+.kocard{background:#151e2d;border:1px solid #1e2d3d;border-radius:10px;padding:12px}
+.kort{font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;color:#22d3ee;margin-bottom:6px}
+.kord{font-size:10px;color:#64748b;margin-bottom:8px}
+.kosel{width:100%;background:#080b10;border:1px solid #1e2d3d;color:#e2e8f0;padding:6px 8px;border-radius:6px;font-size:11px;margin-bottom:8px}
+.kom{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px}
+.lvaBtn{width:100%;margin-top:14px;padding:12px;background:linear-gradient(135deg,#4ade80,#22d3ee);color:#000;border:none;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:3px}
+.lvrBtn{width:100%;margin-top:7px;padding:9px;background:transparent;color:#64748b;border:1px solid #1e2d3d;border-radius:10px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px}
+.lvsts{text-align:center;padding:8px;font-size:11px;color:#4ade80;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;display:none}
+/* TIMELINE */
+.ptabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.ptab{padding:6px 12px;border-radius:16px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:2px;border:1px solid #1e2d3d;background:#151e2d;color:#64748b}
+.ptab.on.ger{background:#6b7280;color:#fff;border-color:transparent}
+.ptab.on.ecu{background:#FFD700;color:#000;border-color:transparent}
+.ptab.on.ivo{background:#F97316;color:#000;border-color:transparent}
+.ptab.on.cur{background:#3B82F6;color:#fff;border-color:transparent}
+.tline{position:relative;padding-left:44px}
+.tline:before{content:'';position:absolute;left:15px;top:18px;bottom:18px;width:2px;background:linear-gradient(180deg,#4ade80,#22d3ee,#a78bfa,#ec4899,#fbbf24)}
+.titem{position:relative;margin-bottom:12px}
+.tnd{position:absolute;left:-32px;top:11px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;z-index:1}
+.tc2{background:#0f1520;border:1px solid #1e2d3d;border-radius:10px;padding:11px 14px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.trl{font-family:'Bebas Neue',sans-serif;font-size:14px;letter-spacing:2px}
+.top{font-size:11px;color:#64748b;margin-top:2px}
+.tdt{font-size:10px;color:#374151;margin-top:2px;letter-spacing:1px}
+.tpn{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;text-align:right}
+.tpl{font-size:9px;color:#64748b;letter-spacing:2px;text-align:right}
+.tbar{margin-top:5px;height:3px;background:#374151;border-radius:2px;overflow:hidden}
+.tbf{height:100%;border-radius:2px}
+/* FUNNEL */
+.fnl{background:#0f1520;border:1px solid #1e2d3d;border-radius:10px;padding:14px;margin-top:20px}
+.frow{margin-bottom:12px}
+.frl{font-size:10px;color:#64748b;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;font-family:'Barlow Condensed',sans-serif}
+.ftms{display:flex;flex-direction:column;gap:3px}
+.ftr{display:flex;align-items:center;gap:7px}
+.ffg{font-size:14px;width:20px}
+.fbt{width:80px;height:12px;background:#374151;border-radius:2px;overflow:hidden}
+.fbf{height:100%;border-radius:2px}
+.fpc{font-size:11px;font-weight:700;min-width:36px;font-family:'Barlow Condensed',sans-serif}
+.fnm{font-size:11px;color:#64748b}
+/* MATCHUP */
+.mgrid{display:grid;gap:7px}
+.murow{background:#0f1520;border:1px solid #1e2d3d;border-radius:10px;padding:10px 14px;display:grid;grid-template-columns:120px 1fr;align-items:center;gap:10px}
+.murd{font-size:10px;color:#64748b;letter-spacing:2px;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif}
+.muin{display:flex;align-items:center;gap:8px}
+.mupc{display:flex;justify-content:space-between;font-size:11px;font-weight:700;margin-bottom:3px}
+.mubr{height:7px;background:#374151;border-radius:3px;display:flex;overflow:hidden}
+.muel{font-size:9px;color:#64748b;text-align:center;margin-top:2px;letter-spacing:1px}
+/* ABOUT */
+.abox{background:#151e2d;border:1px solid #1e2d3d;border-radius:12px;padding:16px;margin-bottom:12px}
+.atl{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:3px;color:#22d3ee;margin-bottom:8px}
+.atx{font-size:12px;color:#64748b;line-height:1.8}
+.atx strong{color:#e2e8f0}
+.shbx{background:linear-gradient(135deg,rgba(74,222,128,.07),rgba(34,211,238,.07));border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:14px;margin-top:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.shbn{background:rgba(74,222,128,.15);border:1px solid #4ade80;color:#4ade80;padding:9px 16px;font-family:'Bebas Neue',sans-serif;font-size:12px;letter-spacing:3px;border-radius:8px;white-space:nowrap}
+/* BANNER */
+.bnr{border-radius:8px;padding:9px 12px;margin-bottom:14px;font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:2px}
+.bnr.live{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#4ade80}
+.bnr.elo{background:rgba(34,211,238,.07);border:1px solid rgba(34,211,238,.2);color:#22d3ee}
+/* RESPONSIVE */
+@media(max-width:560px){
+  .mrow{grid-template-columns:1fr;gap:4px;text-align:center}
+  .murow{grid-template-columns:1fr}
+  .fbt{width:55px}
+  .tgrid{grid-template-columns:1fr}
+  .sp-logo{font-size:48px}
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div id="splash">
+  <div class="sp-ball">⚽</div>
+  <div class="sp-logo">ACHTZEHNMETER</div>
+  <div class="sp-by">BY HANS</div>
+  <div class="sp-sub">FIFA WORLD CUP 2026 · GRUPPE E · TURNIERSIMULATION</div>
+  <div class="sp-grid">
+    <div class="sp-card"><div class="sp-ci">🎯</div><div class="sp-ct">Gruppe E Fokus</div><div class="sp-cd">Tiefenanalyse von Deutschland, Ecuador, Elfenbeinküste und Curaçao.</div></div>
+    <div class="sp-card"><div class="sp-ci">🔢</div><div class="sp-ct">50.000 Simulationen</div><div class="sp-cd">Monte-Carlo: 50.000 Turnierdurchläufe direkt im Browser — offline.</div></div>
+    <div class="sp-card"><div class="sp-ci">📊</div><div class="sp-ct">Echte Elo-Ratings</div><div class="sp-cd">World Football Elo Ratings Januar 2026 — wie ESPN & Co.</div></div>
+    <div class="sp-card"><div class="sp-ci">⚡</div><div class="sp-ct">Live-Ergebnisse</div><div class="sp-cd">Spielergebnisse eintragen — Simulation passt sich sofort an.</div></div>
+    <div class="sp-card"><div class="sp-ci">📱</div><div class="sp-ct">Echte App</div><div class="sp-cd">Homescreen-Icon, läuft offline, kein Login, kein Abo.</div></div>
+    <div class="sp-card"><div class="sp-ci">🔗</div><div class="sp-ct">Teilbar</div><div class="sp-cd">Link teilen — Freunde öffnen die App sofort auf jedem Gerät.</div></div>
+  </div>
+  <button class="sp-btn" id="btnStart">APP STARTEN</button>
+  <div class="sp-note">KEINE DATEN WERDEN GESENDET · ALLES LÄUFT LOKAL</div>
+</div>
+
+<div id="app">
+  <div class="hdr">
+    <div class="hdr-row">
+      <span style="font-size:22px">⚽</span>
+      <div>
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span class="hdr-t">ACHTZEHNMETER</span>
+          <span class="hdr-by">by Hans</span>
+        </div>
+        <div class="hdr-s">Gruppe E · Monte-Carlo · Elo · 50.000 Läufe</div>
+      </div>
+    </div>
+    <div class="tabs">
+      <button class="tab on" data-tab="overview">Übersicht</button>
+      <button class="tab" data-tab="live">⚡ Live</button>
+      <button class="tab" data-tab="path">Turnierpfad</button>
+      <button class="tab" data-tab="matchup">Direktvergleich</button>
+      <button class="tab" data-tab="about">Info</button>
+    </div>
+  </div>
+  <div class="cnt">
+    <div id="loader" class="ldr"><div class="ldr-b">⚽</div><div class="ldr-t">SIMULIERE 50.000 TURNIERE...</div></div>
+    <div id="tab-overview" style="display:none"></div>
+    <div id="tab-live" style="display:none"></div>
+    <div id="tab-path" style="display:none"></div>
+    <div id="tab-matchup" style="display:none"></div>
+    <div id="tab-about" style="display:none"></div>
+  </div>
+</div>
+
+<script>
+var ELO={'Germany':1910,'Ecuador':1933,'Ivory Coast':1720,'Curacao':1480,'Spain':2171,'Argentina':2113,'France':2063,'England':2042,'Colombia':1998,'Brazil':1979,'Portugal':1976,'Netherlands':1959,'Croatia':1933,'Norway':1922,'Switzerland':1897,'Uruguay':1890,'Turkey':1880,'Japan':1879,'Senegal':1869,'Denmark':1864,'Italy':1859,'Belgium':1849,'Morocco':1830,'USA':1810,'Mexico':1790,'Canada':1780,'Scotland':1750,'Sweden':1740,'Iraq':1520,'Austria':1820,'Algeria':1780,'Jordan':1560};
+var ELO0={'Germany':1910,'Ecuador':1933,'Ivory Coast':1720,'Curacao':1480,'Spain':2171,'Argentina':2113,'France':2063,'England':2042,'Colombia':1998,'Brazil':1979,'Portugal':1976,'Netherlands':1959,'Croatia':1933,'Norway':1922,'Switzerland':1897,'Uruguay':1890,'Turkey':1880,'Japan':1879,'Senegal':1869,'Denmark':1864,'Italy':1859,'Belgium':1849,'Morocco':1830,'USA':1810,'Mexico':1790,'Canada':1780,'Scotland':1750,'Sweden':1740,'Iraq':1520,'Austria':1820,'Algeria':1780,'Jordan':1560};
+var FLAG={'Germany':'🇩🇪','Ecuador':'🇪🇨','Ivory Coast':'🇨🇮','Curacao':'🇨🇼','Spain':'🇪🇸','Argentina':'🇦🇷','France':'🇫🇷','England':'🏴','Colombia':'🇨🇴','Brazil':'🇧🇷','Portugal':'🇵🇹','Netherlands':'🇳🇱','Croatia':'🇭🇷','Norway':'🇳🇴','Switzerland':'🇨🇭','Uruguay':'🇺🇾','Turkey':'🇹🇷','Japan':'🇯🇵','Senegal':'🇸🇳','Denmark':'🇩🇰','Italy':'🇮🇹','Belgium':'🇧🇪','Morocco':'🇲🇦','USA':'🇺🇸','Mexico':'🇲🇽','Canada':'🇨🇦','Scotland':'🏴','Sweden':'🇸🇪','Iraq':'🇮🇶','Austria':'🇦🇹','Algeria':'🇩🇿','Jordan':'🇯🇴'};
+var TCLS={'Germany':'ger','Ecuador':'ecu','Ivory Coast':'ivo','Curacao':'cur'};
+var TCOL={'Germany':'#9ca3af','Ecuador':'#FFD700','Ivory Coast':'#F97316','Curacao':'#3B82F6'};
+var GE=['Germany','Ecuador','Ivory Coast','Curacao'];
+var RC=['#4ade80','#22d3ee','#a78bfa','#ec4899','#f97316','#fbbf24'];
+var RI=['⚽','🏟','🎯','🔥','⚡','🏆'];
+var R32W=['Norway','Sweden','Scotland','Algeria','Jordan'];
+var R16W=['Netherlands','Croatia','Belgium','Morocco','Canada'];
+var QPL=['Brazil','France','Spain','Argentina','England','Portugal','Colombia'];
+var SPL=['Spain','Argentina','France','England','Brazil','Portugal'];
+var R32R=['Senegal','Japan','Denmark','Turkey','Iraq'];
+var R16R=['Uruguay','Switzerland','Mexico','Scotland','Austria'];
+var GMS=[{a:'Germany',b:'Curacao',d:'Spieltag 1'},{a:'Ivory Coast',b:'Ecuador',d:'Spieltag 1'},{a:'Germany',b:'Ivory Coast',d:'Spieltag 2'},{a:'Ecuador',b:'Curacao',d:'Spieltag 2'},{a:'Ecuador',b:'Germany',d:'Spieltag 3'},{a:'Curacao',b:'Ivory Coast',d:'Spieltag 3'}];
+var LIVE={g:{},ko:{}};
+var PROBS=null;
+var APT='Germany';
+
+function dn(t){return t==='Ivory Coast'?'Elfenbeinküste':(t==='Curacao'?'Cura\u00e7ao':t)}
+function mk(a,b){return a+'__'+b}
+function ew(a,b){var ea=ELO[a]||1600,eb=ELO[b]||1600;return 1/(1+Math.pow(10,(eb-ea)/400))}
+
+function rebuildElo(){
+  var k;
+  for(k in ELO0){if(ELO0.hasOwnProperty(k)){ELO[k]=ELO0[k]}}
+  var K=20;
+  GMS.forEach(function(m){
+    var r=LIVE.g[mk(m.a,m.b)];
+    if(!r||!r.ok) return;
+    var ea=ELO[m.a]||1600,eb=ELO[m.b]||1600;
+    var pa=1/(1+Math.pow(10,(eb-ea)/400));
+    var sa=r.ga>r.gb?1:r.ga<r.gb?0:0.5;
+    ELO[m.a]=Math.round(ea+K*(sa-pa));
+    ELO[m.b]=Math.round(eb+K*((1-sa)-(1-pa)));
+  });
+}
+
+function mc(N){
+  var sd=77777;
+  function rng(){sd=(sd*1664525+1013904223)&0x7fffffff;return sd/0x7fffffff}
+  var st={},i,x,y;
+  GE.forEach(function(t){st[t]={p1:0,p2:0,p3:0,p4:0,r32:0,r16:0,qf:0,sf:0,fin:0,win:0}});
+  var knP={},knG={},knD={};
+  GE.forEach(function(t){knP[t]=0;knG[t]=0;knD[t]=0});
+  GMS.forEach(function(m){
+    var r=LIVE.g[mk(m.a,m.b)];
+    if(!r||!r.ok) return;
+    knG[m.a]+=r.ga;knG[m.b]+=r.gb;knD[m.a]+=r.ga-r.gb;knD[m.b]+=r.gb-r.ga;
+    if(r.ga>r.gb){knP[m.a]+=3}else if(r.ga<r.gb){knP[m.b]+=3}else{knP[m.a]+=1;knP[m.b]+=1}
+  });
+  var rem=[];
+  GMS.forEach(function(m){var r=LIVE.g[mk(m.a,m.b)];if(!r||!r.ok)rem.push(m)});
+  for(i=0;i<N;i++){
+    var pts={},gd={},gf={};
+    GE.forEach(function(t){pts[t]=knP[t];gd[t]=knD[t];gf[t]=knG[t]});
+    rem.forEach(function(m){
+      var pa=ew(m.a,m.b),r2=rng();
+      var ga=Math.round(rng()*2.5*pa*1.8),gb=Math.round(rng()*2.5*(1-pa)*1.8);
+      gf[m.a]+=ga;gf[m.b]+=gb;gd[m.a]+=ga-gb;gd[m.b]+=gb-ga;
+      if(r2<pa*0.72){pts[m.a]+=3}else if(r2<pa*0.72+(1-pa)*0.72){pts[m.b]+=3}else{pts[m.a]+=1;pts[m.b]+=1}
+    });
+    var s=GE.slice().sort(function(a,b){return pts[b]-pts[a]||gd[b]-gd[a]||gf[b]-gf[a]});
+    for(x=0;x<s.length;x++){st[s[x]]['p'+(x+1)]++}
+    var fi=s[0],se=s[1];
+    function ko(tm,p1,p2){
+      var o1=p1[Math.floor(rng()*p1.length)];
+      if(rng()<ew(tm,o1)){
+        st[tm].r32++;
+        var o2=p2[Math.floor(rng()*p2.length)];
+        if(rng()<ew(tm,o2)){
+          st[tm].r16++;
+          var o3=QPL[Math.floor(rng()*QPL.length)];
+          if(rng()<ew(tm,o3)){
+            st[tm].qf++;
+            var o4=SPL[Math.floor(rng()*SPL.length)];
+            if(rng()<ew(tm,o4)){
+              st[tm].sf++;
+              var rm2=[];
+              for(y=0;y<SPL.length;y++){if(SPL[y]!==o4)rm2.push(SPL[y])}
+              if(rng()<ew(tm,rm2[Math.floor(rng()*rm2.length)])){st[tm].win++}
+              st[tm].fin++
+            }
+          }
+        }
+      }
+    }
+    ko(fi,R32W,R16W);ko(se,R32R,R16R);
+  }
+  var pc={};
+  GE.forEach(function(t){
+    pc[t]={};
+    var keys=['p1','p2','p3','p4','r32','r16','qf','sf','fin','win'];
+    for(var ki=0;ki<keys.length;ki++){pc[t][keys[ki]]=st[t][keys[ki]]/N*100}
+  });
+  return pc
+}
+
+function renderOverview(){
+  var el=document.getElementById('tab-overview');
+  var ord=GE.slice().sort(function(a,b){return(PROBS[b].win||0)-(PROBS[a].win||0)});
+  var hasR=false;
+  GMS.forEach(function(m){var r=LIVE.g[mk(m.a,m.b)];if(r&&r.ok)hasR=true});
+  var bnr=hasR?'<div class="bnr live">⚡ SIMULATION BASIERT AUF EINGETRAGENEN LIVE-ERGEBNISSEN</div>':'<div class="bnr elo">📊 REINE ELO-PROGNOSE · NOCH KEINE ERGEBNISSE EINGETRAGEN</div>';
+  var rws=[{l:'Platz 1',k:'p1',c:'#4ade80'},{l:'Platz 2',k:'p2',c:'#22d3ee'},{l:'Platz 3',k:'p3',c:'#f59e0b'},{l:'Achtelfinale',k:'r32',c:'#a78bfa'},{l:'Runde 16',k:'r16',c:'#ec4899'},{l:'Viertelfinale',k:'qf',c:'#f97316'},{l:'Halbfinale',k:'sf',c:'#ef4444'},{l:'Finale',k:'fin',c:'#fbbf24'}];
+  var cards='';
+  for(var oi=0;oi<ord.length;oi++){
+    var t=ord[oi],p=PROBS[t],cl=TCLS[t],co=TCOL[t];
+    var bars='';
+    for(var ri=0;ri<rws.length;ri++){
+      var rw=rws[ri];
+      bars+='<div class="br"><div class="blr"><span class="bll">'+rw.l+'</span><span class="blv" style="color:'+rw.c+'">'+p[rw.k].toFixed(1)+'%</span></div><div class="bt"><div class="bf" style="width:'+Math.min(p[rw.k],100)+'%;background:'+rw.c+'"></div></div></div>';
+    }
+    cards+='<div class="tcard '+cl+'" data-pt="'+t+'"><div class="th"><div><div class="tf">'+FLAG[t]+'</div><div class="tn">'+dn(t)+'</div><div class="te">Elo '+ELO[t]+'</div></div><div><div class="tw" style="color:'+co+'">'+p.win.toFixed(1)+'<span style="font-size:13px;color:#64748b">%</span></div><div class="twl">Weltmeister</div></div></div>'+bars+'</div>';
+  }
+  var mrows='';
+  for(var mi=0;mi<GMS.length;mi++){
+    var m=GMS[mi],a=m.a,b=m.b;
+    var res=LIVE.g[mk(a,b)];
+    var pa=(ew(a,b)*100).toFixed(1),pb=(100-parseFloat(pa)).toFixed(1);
+    var ca=TCOL[a]||'#4ade80',cb2=TCOL[b]||'#4ade80';
+    var rb=res&&res.ok?'<div style="font-family:\'Bebas Neue\',sans-serif;font-size:17px;color:#4ade80;letter-spacing:2px;text-align:center">'+res.ga+' - '+res.gb+'</div>':'';
+    mrows+='<div class="mrow"><div class="mta">'+FLAG[a]+' '+dn(a)+'</div><div class="mc">'+rb+'<div class="mpr"><span style="color:'+(parseFloat(pa)>=50?'#4ade80':'#ef4444')+'">'+pa+'%</span><span style="font-size:9px;color:#64748b">'+m.d.toUpperCase()+'</span><span style="color:'+(parseFloat(pb)>=50?'#4ade80':'#ef4444')+'">'+pb+'%</span></div><div class="mbt"><div style="width:'+pa+'%;background:'+ca+'"></div><div style="flex:1;background:'+cb2+'"></div></div></div><div class="mtb">'+dn(b)+' '+FLAG[b]+'</div></div>';
+  }
+  el.innerHTML=bnr+'<div class="slbl">Wahrscheinlichkeiten</div><div class="tgrid">'+cards+'</div><div class="slbl">Gruppenspiele</div><div class="mtbl">'+mrows+'</div>';
+}
+
+function renderLive(){
+  var el=document.getElementById('tab-live');
+  var ghtml='<div class="lvph">GRUPPENPHASE — GRUPPE E</div>';
+  for(var mi=0;mi<GMS.length;mi++){
+    var m=GMS[mi],key=mk(m.a,m.b),r=LIVE.g[key]||{};
+    var gav=r.ok?(r.ga+''):'',gbv=r.ok?(r.gb+''):'';
+    ghtml+='<div class="lvm"><div class="lvmt r">'+FLAG[m.a]+' '+dn(m.a)+'</div><div class="lvsc"><input class="lvi" type="number" min="0" max="20" placeholder="-" value="'+gav+'" data-gk="'+key+'" data-gs="a"><span class="lvsp">:</span><input class="lvi" type="number" min="0" max="20" placeholder="-" value="'+gbv+'" data-gk="'+key+'" data-gs="b"></div><div class="lvmt">'+dn(m.b)+' '+FLAG[m.b]+'</div></div>'+(r.ok?'<div class="lvok">&#10003; EINGETRAGEN</div>':'');
+  }
+  var koRnds=[{k:'r32',l:'ACHTELFINALE (R32)',d:'Deutschland vs. Gegner (3rd place)',pool:['Norway','Sweden','Scotland','Algeria','Jordan','Senegal','Japan','Denmark','Turkey','Iraq']},{k:'r16',l:'RUNDE DER 16',d:'Deutschland vs. Gruppensieger/-zweiter',pool:['Netherlands','Croatia','Belgium','Morocco','Canada','Uruguay','Switzerland','Mexico','Scotland','Austria']},{k:'qf',l:'VIERTELFINALE',d:'Deutschland vs. Topnation',pool:['Brazil','France','Spain','Argentina','England','Portugal','Colombia']},{k:'sf',l:'HALBFINALE',d:'Deutschland vs. Halbfinal-Gegner',pool:['Spain','Argentina','France','England','Brazil','Portugal']},{k:'fin',l:'FINALE',d:'Deutschland im Finale',pool:['Spain','Argentina','France','England','Brazil','Portugal','Netherlands']}];
+  var kohtml='<div class="lvph">DEUTSCHLANDS KNOCKOUT-PFAD</div><div style="font-size:11px;color:#64748b;margin-bottom:10px;line-height:1.5">Gegner auswaehlen und Ergebnis eintragen sobald gespielt.</div><div class="kogrid">';
+  for(var ki=0;ki<koRnds.length;ki++){
+    var kr=koRnds[ki],kr2=LIVE.ko[kr.k]||{};
+    var opts='<option value="">Gegner waehlen...</option>';
+    for(var pi=0;pi<kr.pool.length;pi++){opts+='<option value="'+kr.pool[pi]+'"'+(kr2.opp===kr.pool[pi]?' selected':'')+'>'+FLAG[kr.pool[pi]]+' '+kr.pool[pi]+'</option>'}
+    kohtml+='<div class="kocard"><div class="kort">'+kr.l+'</div><div class="kord">'+kr.d+'</div><select class="kosel" data-ko="'+kr.k+'" data-ks="opp">'+opts+'</select><div class="kom"><div style="font-size:11px;font-weight:600">🇩🇪 DE</div><div class="lvsc"><input class="lvi" type="number" min="0" max="20" placeholder="-" value="'+(kr2.ok?(kr2.ga+''):'')+'" data-ko="'+kr.k+'" data-ks="a"><span class="lvsp">:</span><input class="lvi" type="number" min="0" max="20" placeholder="-" value="'+(kr2.ok?(kr2.gb+''):'')+'" data-ko="'+kr.k+'" data-ks="b"></div><div style="font-size:11px;font-weight:600">'+(kr2.opp?(FLAG[kr2.opp]+' '+kr2.opp):'Gegner')+'</div></div>'+(kr2.ok?'<div style="font-size:9px;color:#4ade80;letter-spacing:1px;margin-top:4px;text-align:center">&#10003; EINGETRAGEN</div>':'')+'</div>';
+  }
+  kohtml+='</div>';
+  el.innerHTML='<div class="lvsec"><div class="lvt">⚡ Live-Ergebnisse</div><div class="lvd">Ergebnisse eintragen — die Simulation rechnet sofort neu und zeigt aktualisierte Qualifikationschancen.</div>'+ghtml+kohtml+'<div id="lvsts" class="lvsts"></div><button class="lvaBtn" id="btnApply">SIMULATION AKTUALISIEREN</button><button class="lvrBtn" id="btnReset">Alle Ergebnisse zuruecksetzen</button></div>';
+  document.getElementById('btnApply').onclick=applyLive;
+  document.getElementById('btnReset').onclick=function(){
+    LIVE={g:{},ko:{}};rebuildElo();PROBS=mc(50000);renderOverview();renderMatchup();renderLive();showSts('ZURUECKGESETZT');
+  };
+}
+
+function applyLive(){
+  var inps=document.querySelectorAll('[data-gk]');
+  for(var i=0;i<inps.length;i++){
+    var inp=inps[i],key=inp.getAttribute('data-gk'),side=inp.getAttribute('data-gs');
+    if(!LIVE.g[key])LIVE.g[key]={ga:null,gb:null,ok:false};
+    if(inp.value.trim()!==''){
+      if(side==='a')LIVE.g[key].ga=parseInt(inp.value);
+      else LIVE.g[key].gb=parseInt(inp.value);
+    }
+  }
+  GMS.forEach(function(m){
+    var r=LIVE.g[mk(m.a,m.b)];
+    if(r&&r.ga!==null&&r.gb!==null&&!isNaN(r.ga)&&!isNaN(r.gb))r.ok=true;
+  });
+  var kos=['r32','r16','qf','sf','fin'];
+  for(var ki=0;ki<kos.length;ki++){
+    var kk=kos[ki];
+    if(!LIVE.ko[kk])LIVE.ko[kk]={opp:null,ga:null,gb:null,ok:false};
+    var kr=LIVE.ko[kk];
+    var sel=document.querySelector('[data-ko="'+kk+'"][data-ks="opp"]');
+    var ia=document.querySelector('[data-ko="'+kk+'"][data-ks="a"]');
+    var ib=document.querySelector('[data-ko="'+kk+'"][data-ks="b"]');
+    if(sel&&sel.value)kr.opp=sel.value;
+    if(ia&&ia.value.trim()!=='')kr.ga=parseInt(ia.value);
+    if(ib&&ib.value.trim()!=='')kr.gb=parseInt(ib.value);
+    if(kr.opp&&kr.ga!==null&&kr.gb!==null&&!isNaN(kr.ga)&&!isNaN(kr.gb))kr.ok=true;
+  }
+  rebuildElo();PROBS=mc(50000);renderOverview();renderMatchup();renderLive();showSts('&#10003; AKTUALISIERT');
+}
+
+function showSts(m){var s=document.getElementById('lvsts');if(s){s.innerHTML=m;s.style.display='block';setTimeout(function(){s.style.display='none'},2500)}}
+
+function renderPath(team){
+  APT=team;
+  var p=PROBS[team],co=TCOL[team];
+  var isW=p.p1>p.p2;
+  var r32P=isW?R32W:R32R,r16P=isW?R16W:R16R;
+  function avgElo(pool){var s=0;for(var i=0;i<pool.length;i++)s+=(ELO[pool[i]]||1600);return Math.round(s/pool.length)}
+  function koInfo(key){var r=LIVE.ko[key];if(!r||!r.ok)return'';return' · Ergebnis: '+r.ga+':'+r.gb+(r.ga>r.gb?' ✓':' ✗')}
+  var rnds=[
+    {l:'GRUPPENPHASE',o:'vs. '+GE.filter(function(x){return x!==team}).map(dn).join(', '),pr:Math.min(p.p1+p.p2+p.p3*0.6,100),d:'P1: '+p.p1.toFixed(1)+'% | P2: '+p.p2.toFixed(1)+'% | P3: '+p.p3.toFixed(1)+'%'},
+    {l:'ACHTELFINALE (R32)',o:'vs. '+r32P.slice(0,2).join(' / '),pr:p.r32,d:'Elo ~'+avgElo(r32P)+koInfo('r32')},
+    {l:'RUNDE DER 16',o:'vs. '+r16P.slice(0,2).join(' / '),pr:p.r16,d:'Elo ~'+avgElo(r16P)+koInfo('r16')},
+    {l:'VIERTELFINALE',o:'vs. Brasilien / Frankreich (wahrscheinlich)',pr:p.qf,d:'Schluessel­spiel · Elo ~2020'+koInfo('qf')},
+    {l:'HALBFINALE',o:'vs. Spanien / Argentinien',pr:p.sf,d:'Elo ~2142'+koInfo('sf')},
+    {l:'FINALE',o:'MetLife Stadium · New Jersey',pr:p.fin,d:'Weltmeister: '+p.win.toFixed(2)+'%'+koInfo('fin')}
+  ];
+  var tabsH='';
+  for(var ti=0;ti<GE.length;ti++){var t2=GE[ti];tabsH+='<button class="ptab '+TCLS[t2]+(t2===team?' on':'')+'" data-rp="'+t2+'">'+FLAG[t2]+' '+dn(t2)+'</button>'}
+  var tlH='';
+  for(var ri=0;ri<rnds.length;ri++){
+    var r=rnds[ri];
+    tlH+='<div class="titem"><div class="tnd" style="background:'+RC[ri]+'">'+RI[ri]+'</div><div class="tc2" style="border-color:'+RC[ri]+'22"><div style="flex:1"><div class="trl" style="color:'+RC[ri]+'">'+r.l+'</div><div class="top">'+r.o+'</div><div class="tdt">'+r.d+'</div><div class="tbar"><div class="tbf" style="width:'+Math.min(r.pr,100)+'%;background:'+RC[ri]+'88"></div></div></div><div><div class="tpn" style="color:'+RC[ri]+'">'+r.pr.toFixed(1)+'<span style="font-size:13px;color:#64748b">%</span></div><div class="tpl">ERREICHEN</div></div></div></div>';
+  }
+  var frndz=[{l:'Qualifikation KO',ks:['p1','p2'],ex:'p3',f:0.6},{l:'Achtelfinale R32',ks:['r32']},{l:'Runde der 16',ks:['r16']},{l:'Viertelfinale',ks:['qf']},{l:'Halbfinale',ks:['sf']},{l:'Finale',ks:['fin']},{l:'Weltmeister',ks:['win']}];
+  var fnlH='';
+  for(var fi=0;fi<frndz.length;fi++){
+    var fr=frndz[fi];
+    var vals=[];
+    for(var vi=0;vi<GE.length;vi++){
+      var gt=GE[vi],v=0;
+      for(var ki=0;ki<fr.ks.length;ki++)v+=PROBS[gt][fr.ks[ki]]||0;
+      if(fr.ex)v+=(PROBS[gt][fr.ex]||0)*(fr.f||1);
+      vals.push({team:gt,val:v});
+    }
+    vals.sort(function(a,b){return b.val-a.val});
+    var mx=vals[0].val||0.1;
+    var frows='';
+    for(var fvi=0;fvi<vals.length;fvi++){var fv=vals[fvi];frows+='<div class="ftr"><div class="ffg">'+FLAG[fv.team]+'</div><div class="fbt"><div class="fbf" style="width:'+(fv.val/mx*100)+'%;background:'+TCOL[fv.team]+'"></div></div><div class="fpc" style="color:'+TCOL[fv.team]+'">'+fv.val.toFixed(1)+'%</div><div class="fnm">'+dn(fv.team)+'</div></div>'}
+    fnlH+='<div class="frow"><div class="frl">'+fr.l+'</div><div class="ftms">'+frows+'</div></div>';
+  }
+  var el=document.getElementById('tab-path');
+  el.innerHTML='<div class="ptabs">'+tabsH+'</div><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:28px">'+FLAG[team]+'</span><div><div style="font-family:\'Bebas Neue\',sans-serif;font-size:26px;letter-spacing:3px;color:'+co+'">'+dn(team).toUpperCase()+'</div><div style="font-size:11px;color:#64748b">Elo '+ELO[team]+' · WM-Chance: '+p.win.toFixed(2)+'%</div></div></div><div style="font-size:11px;color:#374151;margin-bottom:18px">'+(team==='Germany'?'Gruppensieger-Favorit: R32 → R16 → QF vs. BRA/FRA':'Kampf um Platz 2 — Knockout-Pfad leicht schwerer')+'</div><div class="tline">'+tlH+'</div><div class="slbl" style="margin-top:20px">Rundenvergleich</div><div class="fnl">'+fnlH+'</div>';
+}
+
+function renderMatchup(){
+  var opps=[{o:'Norway',r:'R32 wahrscheinlich'},{o:'Sweden',r:'R32 alternativ'},{o:'Netherlands',r:'R16 wahrscheinlich'},{o:'Croatia',r:'R16 alternativ'},{o:'Brazil',r:'QF Top-Favorit'},{o:'France',r:'QF alternativ'},{o:'Colombia',r:'QF alternativ'},{o:'Spain',r:'HF wahrscheinlich'},{o:'Argentina',r:'HF / Finale'},{o:'England',r:'Finale alternativ'},{o:'Portugal',r:'Finale alternativ'}];
+  var rows='';
+  for(var oi=0;oi<opps.length;oi++){
+    var x=opps[oi],pG=(ew('Germany',x.o)*100).toFixed(1),pO=(100-parseFloat(pG)).toFixed(1),win=parseFloat(pG)>=50;
+    var act='';
+    var kks=['r32','r16','qf','sf','fin'];
+    for(var ki=0;ki<kks.length;ki++){var kr=LIVE.ko[kks[ki]];if(kr&&kr.ok&&kr.opp===x.o){act='<div style="font-size:10px;color:'+(kr.ga>kr.gb?'#4ade80':'#ef4444')+';text-align:center;margin-top:3px">'+(kr.ga>kr.gb?'✓ GEWONNEN':'✗ VERLOREN')+' '+kr.ga+':'+kr.gb+'</div>';break}}
+    rows+='<div class="murow"><div class="murd">'+x.r+'</div><div style="flex:1"><div class="muin"><span style="font-size:16px">🇩🇪</span><div style="flex:1"><div class="mupc"><span style="color:'+(win?'#4ade80':'#ef4444')+'">DE '+pG+'%</span><span style="color:'+(win?'#ef4444':'#4ade80')+'">'+pO+'% '+x.o+' '+FLAG[x.o]+'</span></div><div class="mubr"><div style="width:'+pG+'%;background:'+(win?'#4ade80':'#ef4444')+'"></div><div style="flex:1;background:'+(win?'#ef4444':'#4ade80')+'"></div></div><div class="muel">Elo GER '+ELO['Germany']+' vs '+x.o+' '+(ELO[x.o]||'?')+'</div></div><span style="font-size:16px">'+FLAG[x.o]+'</span></div>'+act+'</div></div>';
+  }
+  var p=PROBS['Germany'];
+  var sum='<div style="background:linear-gradient(135deg,rgba(74,222,128,.07),rgba(34,211,238,.07));border:1px solid rgba(74,222,128,.2);border-radius:10px;padding:16px;margin-top:14px"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:14px;letter-spacing:3px;color:#4ade80;margin-bottom:10px">🇩🇪 Deutschlands wahrscheinlichster Pfad</div>';
+  var path=[['Gruppenphase','Gruppensieger: '+p.p1.toFixed(0)+'%','#4ade80'],['Achtelfinale R32','Einzug: ~'+p.r32.toFixed(0)+'%','#22d3ee'],['Runde der 16','Einzug: ~'+p.r16.toFixed(0)+'%','#a78bfa'],['Viertelfinale','vs. BRA/FRA — Einzug: ~'+p.qf.toFixed(0)+'%','#ec4899'],['Halbfinale','Einzug: ~'+p.sf.toFixed(0)+'%','#f97316'],['Finale','Weltmeister: '+p.win.toFixed(2)+'%','#fbbf24']];
+  for(var pi=0;pi<path.length;pi++){var pr=path[pi];sum+='<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #1e2d3d"><div style="min-width:130px;color:'+pr[2]+';font-family:\'Bebas Neue\',sans-serif;font-size:12px;letter-spacing:1px">'+pr[0]+'</div><div style="color:#64748b;font-size:12px">'+pr[1]+'</div></div>'}
+  sum+='</div>';
+  document.getElementById('tab-matchup').innerHTML='<div class="slbl">Deutschland vs. Knockout-Gegner</div><div class="mgrid">'+rows+'</div>'+sum;
+}
+
+function renderAbout(){
+  document.getElementById('tab-about').innerHTML='<div class="abox"><div class="atl">Was ist Achtzehnmeter?</div><div class="atx"><strong>Achtzehnmeter · by Hans</strong> ist eine WM-2026-Turniersimulation mit Fokus auf <strong>Gruppe E</strong>. Laeuft vollstaendig lokal im Browser — kein Server, kein Login, kein Abo.</div></div><div class="abox"><div class="atl">Wie funktioniert die Simulation?</div><div class="atx"><strong>Elo-Ratings:</strong> World Football Elo Ratings Januar 2026.<br><br><strong>Formel:</strong> P(A gewinnt) = 1 / (1 + 10^((EloB-EloA)/400))<br><br><strong>Monte-Carlo:</strong> Das Turnier wird 50.000-mal simuliert. Eingetragene Ergebnisse werden als Fixpunkte behandelt, Elo-Werte dynamisch angepasst.<br><br><strong>Einschraenkung:</strong> Kein Modell kann Verletzungen, Form oder Taktik vorhersagen.</div></div><div class="abox"><div class="atl">Deutschland: Die Ewige Baustelle</div><div class="atx">Nach Vorrunden-Aus 2018 &amp; 2022 und EM-Halbfinale 2024 zeigt Elo Deutschland auf Platz 12 weltweit. Unter Nagelsmann gibt es Aufbruchstimmung — aber das Viertelfinale lauert: wahrscheinlich Brasilien oder Frankreich.</div></div><div class="shbx"><div style="flex:1"><div style="font-family:\'Bebas Neue\',sans-serif;font-size:15px;letter-spacing:2px;color:#4ade80">App teilen</div><div style="font-size:11px;color:#64748b;margin-top:2px">hluedecke.github.io/achtzehnmeter</div></div><button class="shbn" id="btnShare">LINK KOPIEREN</button></div>';
+  document.getElementById('btnShare').onclick=function(){
+    var url='https://hluedecke.github.io/achtzehnmeter';
+    if(navigator.share){navigator.share({title:'Achtzehnmeter WM 2026',url:url})}
+    else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){alert('Link kopiert!')})}
+    else{prompt('Link:',url)}
+  };
+}
+
+function showTab(name){
+  var tabs=document.querySelectorAll('.tab');
+  for(var i=0;i<tabs.length;i++){tabs[i].classList.remove('on')}
+  var tb=document.querySelector('[data-tab="'+name+'"]');
+  if(tb)tb.classList.add('on');
+  var names=['overview','live','path','matchup','about'];
+  for(var ni=0;ni<names.length;ni++){
+    var el=document.getElementById('tab-'+names[ni]);
+    if(el)el.style.display=names[ni]===name?'block':'none';
+  }
+  if(name==='path')renderPath(APT);
+  if(name==='about')renderAbout();
+  if(name==='live')renderLive();
+}
+
+function startApp(){
+  document.getElementById('splash').className='gone';
+  document.getElementById('app').className='on';
+  setTimeout(function(){
+    PROBS=mc(50000);
+    document.getElementById('loader').style.display='none';
+    renderOverview();
+    renderMatchup();
+    showTab('overview');
+  },60);
+}
+
+document.addEventListener('DOMContentLoaded',function(){
+  document.getElementById('btnStart').onclick=startApp;
+  document.addEventListener('click',function(e){
+    var tb=e.target.closest('[data-tab]');
+    if(tb&&PROBS){showTab(tb.getAttribute('data-tab'));return}
+    var pt=e.target.closest('[data-pt]');
+    if(pt&&PROBS){APT=pt.getAttribute('data-pt');showTab('path');return}
+    var rp=e.target.closest('[data-rp]');
+    if(rp&&PROBS){renderPath(rp.getAttribute('data-rp'));return}
+  });
+});
+</script>
+</body>
+</html>
